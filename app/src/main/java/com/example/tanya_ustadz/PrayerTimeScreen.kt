@@ -1,6 +1,7 @@
 package com.example.tanya_ustadz
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,11 +23,17 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PrayerTimeScreen() {
 
+    val backgroundColor = if (isSystemInDarkTheme()) {
+        Color.Black
+    } else {
+        Color.White
+    }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(backgroundColor)
         ) {
             Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
 

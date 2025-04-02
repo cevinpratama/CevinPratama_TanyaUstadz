@@ -2,11 +2,13 @@ package com.example.tanya_ustadz
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -15,13 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.tanya_ustadz.ui.theme.AppColors.surfaceBrightDark
-import com.example.tanya_ustadz.ui.theme.AppColors.surfaceDimDark
+import com.example.tanya_ustadz.ui.theme.AppColors.backgroundDarkMediumContrast
 
 
 data class BottomNavItems(
@@ -32,32 +34,34 @@ data class BottomNavItems(
 
 @Composable
 fun bottomNavItems(): List<BottomNavItems> {
+    val contentColor = contentColor
     return remember {
 
 
         listOf(
-            BottomNavItems("", "jadwal") { Gambar() },
-            BottomNavItems("", "") { Icon(Icons.Default.Search) },
-            BottomNavItems("", "") { Icon(Icons.Default.Add) }
+            BottomNavItems("", "jadwal") { Gambar(contentColor) },
+            BottomNavItems("", "") { Icon(Icons.Default.Search, contentColor) },
+            BottomNavItems("", "") { Icon(Icons.Default.Add, contentColor) }
 
         )
     }
 }
 
 @Composable
-fun Gambar() {
+fun Gambar(tint: Color = contentColor) {
     Image(
         painter = painterResource(id = R.drawable.iconshalat),
         contentDescription = "Deskripsi Gambar",
-
+        colorFilter = ColorFilter.tint(tint)
         )
 }
 
 @Composable
-fun Icon(iconVector: ImageVector) {
+fun Icon(iconVector: ImageVector, tint: Color = contentColor) {
     Image(
         imageVector = iconVector,
-        contentDescription = "Icon"
+        contentDescription = "Icon",
+        colorFilter = ColorFilter.tint(tint)
     )
 }
 
@@ -65,14 +69,23 @@ fun Icon(iconVector: ImageVector) {
 @Composable
 fun BottomBawah(navController: NavController) {
 
+    val backgroundColor = if (isSystemInDarkTheme()) {
+        backgroundDarkMediumContrast
+    } else {
+        Color.White
+    }
+    val contentColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
             .shadow(8.dp, spotColor = Color.Gray),
-        containerColor = Color.White,
-        contentColor = Color.Black
-
+        containerColor = backgroundColor
     ) {
         val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
         val items = bottomNavItems()
@@ -92,9 +105,9 @@ fun BottomBawah(navController: NavController) {
                 },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = surfaceDimDark,
+                    selectedIconColor = contentColor,
                     unselectedIconColor = Color.Gray,
-                    selectedTextColor = surfaceBrightDark,
+                    selectedTextColor = contentColor,
                     unselectedTextColor = Color.Gray,
                     indicatorColor = Color.Transparent
                 ),
