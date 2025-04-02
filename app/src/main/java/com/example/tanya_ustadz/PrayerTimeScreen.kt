@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PrayerTimeScreen() {
 
-    Scaffold( ) { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +28,26 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier
                         .weight(1f)
                     ) {
-                        PrayerTimeScreen()
+                        val navController = rememberNavController()
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.White)
+                        ) {
+                            Box(modifier = Modifier
+                                .weight(1f)
+                            ) {
+                                NavHost(
+                                    navController = navController,
+                                    startDestination = "jadwal"
+                                ) {
+                                    composable("jadwal") { PrayerTimeScreen() }
+                                }
+                            }
+                            BottomBawah(navController)
+                        }
                     }
-
-
                 }
             }
         }
