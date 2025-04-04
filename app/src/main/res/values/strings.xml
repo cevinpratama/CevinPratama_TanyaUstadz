@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tanya_Ustadz</string>
+    <string name="jadwal">Jadwal Sholat</string>
+    <string name="tambah">Tanya Ustadz</string>
+    <string name="akun">Akun</string>
+    <string name="cari">Jawaban Ustadz</string>
 </resources>

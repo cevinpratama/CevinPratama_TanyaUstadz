@@ -11,7 +11,8 @@ android {
     defaultConfig {
         applicationId = "com.example.tanya_ustadz"
         minSdk = 24
-        targetSdk = 34   
+        //noinspection OldTargetApi
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
