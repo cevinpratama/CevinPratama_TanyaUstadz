@@ -1,5 +1,6 @@
 package com.example.tanya_ustadz
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.NavigationBar
@@ -40,8 +42,9 @@ fun bottomNavItems(): List<BottomNavItems> {
 
         listOf(
             BottomNavItems("", "jadwal") { Gambar(contentColor) },
-            BottomNavItems("", "") { Icon(Icons.Default.Search, contentColor) },
-            BottomNavItems("", "") { Icon(Icons.Default.Add, contentColor) }
+            BottomNavItems("", "cari") { Icon(Icons.Default.Search) },
+            BottomNavItems("", "tambah") { Icon(Icons.Default.Add) },
+            BottomNavItems("", "akun") { Icon(Icons.Default.Person) }
 
         )
     }
@@ -66,6 +69,7 @@ fun Icon(iconVector: ImageVector, tint: Color = contentColor) {
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun BottomBawah(navController: NavController) {
 
@@ -79,17 +83,16 @@ fun BottomBawah(navController: NavController) {
     } else {
         Color.Black
     }
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val items = bottomNavItems()
 
-    NavigationBar(
+        NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
             .shadow(8.dp, spotColor = Color.Gray),
         containerColor = backgroundColor
     ) {
-        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-        val items = bottomNavItems()
-
         items.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.route,

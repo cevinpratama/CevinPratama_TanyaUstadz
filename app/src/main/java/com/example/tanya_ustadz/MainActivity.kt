@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
             } else {
                 Color.White
             }
+            val navController = rememberNavController()
 
             Tanya_UstadzTheme {
                 Column(
@@ -38,7 +39,6 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .weight(1f)
                     ) {
-                        val navController = rememberNavController()
 
                         Column(
                             modifier = Modifier
@@ -54,6 +54,9 @@ class MainActivity : ComponentActivity() {
                                     startDestination = "jadwal"
                                 ) {
                                     composable("jadwal") { PrayerTimeScreen() }
+                                    composable("cari") { CariScreen() }
+                                    composable("tambah") { TambahScreen() }
+                                    composable("akun") { AkunScreen() }
                                 }
                             }
                             BottomBawah(navController)
