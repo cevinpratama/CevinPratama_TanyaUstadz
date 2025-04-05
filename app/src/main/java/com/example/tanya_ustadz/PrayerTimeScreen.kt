@@ -41,6 +41,11 @@ fun PrayerTimeScreen() {
     } else {
         Color.White
     }
+    val colorScreen = if (isSystemInDarkTheme()) {
+        Color.Black
+    } else {
+        Color.White
+    }
     Scaffold(
         topBar = {
             Box(
@@ -90,7 +95,7 @@ fun PrayerTimeScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor)
+                .background(colorScreen)
         ) {
             Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
 

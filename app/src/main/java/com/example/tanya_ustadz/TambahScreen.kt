@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tanya_ustadz.ui.theme.AppColors.backgroundDarkMediumContrast
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +35,11 @@ import androidx.compose.ui.unit.sp
 fun TambahScreen() {
 
     val backgroundColor = if (isSystemInDarkTheme()) {
+        backgroundDarkMediumContrast
+    } else {
+        Color.White
+    }
+    val colorScreen = if (isSystemInDarkTheme()) {
         Color.Black
     } else {
         Color.White
@@ -89,7 +95,7 @@ fun TambahScreen() {
         LazyColumn(
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxSize()
-                .background(backgroundColor)
+                .background(colorScreen)
         )
         {
             item {
