@@ -25,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.tanya_ustadz.ui.theme.AppColors.backgroundDarkMediumContrast
 
 
 data class BottomNavItems(
@@ -73,16 +72,8 @@ fun Icon(iconVector: ImageVector, tint: Color = contentColor) {
 @Composable
 fun BottomBawah(navController: NavController) {
 
-    val backgroundColor = if (isSystemInDarkTheme()) {
-        backgroundDarkMediumContrast
-    } else {
-        Color.White
-    }
-    val contentColor = if (isSystemInDarkTheme()) {
-        Color.White
-    } else {
-        Color.Black
-    }
+    val isDark = isSystemInDarkTheme()
+    val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val items = bottomNavItems()
 
@@ -91,7 +82,7 @@ fun BottomBawah(navController: NavController) {
             .fillMaxWidth()
             .height(90.dp)
             .shadow(8.dp, spotColor = Color.Gray),
-        containerColor = backgroundColor
+        containerColor = cardColor
     ) {
         items.forEach { item ->
             NavigationBarItem(

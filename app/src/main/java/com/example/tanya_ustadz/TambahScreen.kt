@@ -27,30 +27,22 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tanya_ustadz.ui.theme.AppColors.backgroundDarkMediumContrast
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TambahScreen() {
 
-    val backgroundColor = if (isSystemInDarkTheme()) {
-        backgroundDarkMediumContrast
-    } else {
-        Color.White
-    }
-    val colorScreen = if (isSystemInDarkTheme()) {
-        Color.Black
-    } else {
-        Color.White
-    }
+    val isDark = isSystemInDarkTheme()
+    val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
+    val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
 
     Scaffold(
         topBar = {
             Box(
                 modifier = Modifier
                     .shadow(4.dp)
-                    .height(80.dp)
+                    .height(70.dp)
             )
             {
                 TopAppBar(
@@ -71,7 +63,7 @@ fun TambahScreen() {
 
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = backgroundColor
+                        containerColor = cardColor
                     ),
                     actions = {
                         Row(
@@ -95,7 +87,7 @@ fun TambahScreen() {
         LazyColumn(
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxSize()
-                .background(colorScreen)
+                .background(backgroundColor)
         )
         {
             item {
