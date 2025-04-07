@@ -2,8 +2,11 @@ package com.example.tanya_ustadz
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,15 +27,21 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -42,8 +51,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import com.example.tanya_ustadz.api.PrayerTimesResponse
+import com.example.tanya_ustadz.api.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrayerTimeScreen() {
@@ -53,8 +70,36 @@ fun PrayerTimeScreen() {
     val currentPrayer = "Maghrib"
     val colorText = if (isDark) Color.White else Color.Black
     val context = LocalContext.current
+    val defaultCity = stringResource(R.string.kota)
+    val kota by remember { mutableStateOf(defaultCity) }
+    var prayerTimes by remember { mutableStateOf<PrayerTimesResponse?>(null) }
+    var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
+    val fetchPrayerTimes: (String) -> Unit = { cityName ->
+        isLoading = true
+        val call = RetrofitClient.apiService.getPrayerTimes(cityName)
+        call.enqueue(object : Callback<PrayerTimesResponse> {
+            override fun onResponse(call: Call<PrayerTimesResponse>, response: Response<PrayerTimesResponse>) {
+                isLoading = false
+                if (response.isSuccessful) {
+                    prayerTimes = response.body()
+                    errorMessage = ""
+                } else {
+                    errorMessage = context.getString(R.string.error)
+                }
+            }
 
+            override fun onFailure(call: Call<PrayerTimesResponse>, t: Throwable) {
+                isLoading = false
+                errorMessage = t.message ?: context.getString(R.string.error)
+            }
+        })
+    }
+
+    LaunchedEffect(kota) {
+        fetchPrayerTimes(kota)
+    }
 
     Scaffold(
         topBar = {
@@ -66,7 +111,7 @@ fun PrayerTimeScreen() {
 
                     ) {
                     Text(
-                        text = stringResource(id = R.string.jadwal),
+                        text = stringResource(R.string.jadwal),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 17.sp,
                         fontStyle = FontStyle.Italic
@@ -94,6 +139,30 @@ fun PrayerTimeScreen() {
         containerColor = backgroundColor
     ) { paddingValues ->
 
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF000000))
+            }
+        } else {
+
+            prayerTimes?.items?.firstOrNull()?.let { prayerItem ->
+                val inputFormatter =
+                    DateTimeFormatter.ofPattern("yyyy-M-d")
+                val outputFormatter =
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+                val formattedDate = try {
+                    LocalDate.parse(prayerItem.date_for, inputFormatter)
+                        .format(outputFormatter)
+                } catch (e: Exception) {
+                    prayerItem.date_for
+                }
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,7 +171,7 @@ fun PrayerTimeScreen() {
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.jadwal),
+                text = kota,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -112,7 +181,7 @@ fun PrayerTimeScreen() {
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "12-12-2025",
+                text = formattedDate,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -130,11 +199,11 @@ fun PrayerTimeScreen() {
                 colors = CardDefaults.cardColors(containerColor = cardColor)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
-                    PrayerRow("Subuh", "05.00", currentPrayer)
-                    PrayerRow("Dzuhur", "12.00", currentPrayer)
-                    PrayerRow("Ashar", "16.00", currentPrayer)
-                    PrayerRow("Maghrib", "17.00", currentPrayer)
-                    PrayerRow("Isya", "19.00", currentPrayer)
+                    PrayerRow(stringResource(id = R.string.subuh), prayerItem.fajr, currentPrayer)
+                    PrayerRow(stringResource(id = R.string.dzuhur), prayerItem.dhuhr, currentPrayer)
+                    PrayerRow(stringResource(id = R.string.ashar), prayerItem.asr, currentPrayer)
+                    PrayerRow(stringResource(id = R.string.maghrib), prayerItem.maghrib, currentPrayer)
+                    PrayerRow(stringResource(id = R.string.isya), prayerItem.isha, currentPrayer)
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -154,14 +223,16 @@ fun PrayerTimeScreen() {
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Bagikan Jadwal")
+                Text(stringResource( id = R.string.bagikanJadwal))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+           }
+          }
         }
-    }
-}
+    }}
+
 fun share(context: Context) {
     val textToShare = """
         Jadwal Sholat - 12-12-2025
@@ -195,7 +266,7 @@ fun share(context: Context) {
 //    }
 //}
 @Composable
-fun PrayerRow(name: String, time: String, currentPrayer: String) {
+fun PrayerRow(name: String, time: String, currentPrayer: String, center: Boolean = false) {
     val isDark = isSystemInDarkTheme()
     val colorText = if (isDark) Color.White else Color.Black
     val isActive = name == currentPrayer
