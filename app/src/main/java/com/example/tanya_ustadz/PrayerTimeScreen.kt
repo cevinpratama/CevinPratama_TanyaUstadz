@@ -1,5 +1,7 @@
 package com.example.tanya_ustadz
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +20,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,6 +41,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +52,8 @@ fun PrayerTimeScreen() {
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val currentPrayer = "Maghrib"
     val colorText = if (isDark) Color.White else Color.Black
+    val context = LocalContext.current
+
 
 
     Scaffold(
@@ -128,12 +137,51 @@ fun PrayerTimeScreen() {
                     PrayerRow("Isya", "19.00", currentPrayer)
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
 
+            OutlinedButton(
+                onClick = { share(context) },
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = if (isDark) Color.White else Color(0xFF1976D2)
+                )
+            ) {
+                IconButton(onClick = { }) {
+                    androidx.compose.material3.Icon(
+                        Icons.Default.Share,
+                        contentDescription = null
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Bagikan Jadwal")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
         }
     }
 }
+fun share(context: Context) {
+    val textToShare = """
+        Jadwal Sholat - 12-12-2025
+        
+        Subuh: 05.00
+        Dzuhur: 12.00
+        Ashar: 16.00
+        Maghrib: 17.00
+        Isya: 19.00
+    """.trimIndent()
 
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, "Jadwal Sholat")
+        putExtra(Intent.EXTRA_TEXT, textToShare)
+    }
+
+    val chooser = Intent.createChooser(intent, "Bagikan jadwal via...")
+    context.startActivity(chooser)
+}
 
 //
 //@Composable
