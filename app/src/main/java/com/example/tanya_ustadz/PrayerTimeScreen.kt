@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import com.example.tanya_ustadz.api.PrayerItem
 import com.example.tanya_ustadz.api.PrayerTimesResponse
 import com.example.tanya_ustadz.api.RetrofitClient
 import retrofit2.Call
@@ -209,7 +210,7 @@ fun PrayerTimeScreen() {
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedButton(
-                onClick = { share(context) },
+                onClick = {  share(context, formattedDate, prayerItem, kota)},
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -233,15 +234,17 @@ fun PrayerTimeScreen() {
         }
     }}
 
-fun share(context: Context) {
+fun share(context: Context, date: String, prayerItem: PrayerItem, kota: String) {
+    val jadwal = context.getString(R.string.jadwal)
     val textToShare = """
-        Jadwal Sholat - 12-12-2025
+        $jadwal - $date
+        Lokasi: $kota
         
-        Subuh: 05.00
-        Dzuhur: 12.00
-        Ashar: 16.00
-        Maghrib: 17.00
-        Isya: 19.00
+        Subuh: ${prayerItem.fajr}
+        Dzuhur: ${prayerItem.dhuhr}
+        Ashar: ${prayerItem.asr}
+        Maghrib: ${prayerItem.maghrib}
+        Isya: ${prayerItem.isha}
     """.trimIndent()
 
     val intent = Intent(Intent.ACTION_SEND).apply {
