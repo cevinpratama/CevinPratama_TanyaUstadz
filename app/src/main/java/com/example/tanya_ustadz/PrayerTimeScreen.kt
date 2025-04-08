@@ -38,6 +38,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Alignment
@@ -46,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -65,8 +68,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
-
 import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +80,8 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val colorText = if (isDark) Color.White else Color.Black
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    var isError by remember { mutableStateOf(false) }
 
     var searchText by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -93,6 +98,9 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -128,22 +136,28 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
         ) {
             OutlinedTextField(
                 value = searchText,
-                onValueChange = { searchText = it },
+                onValueChange = {  searchText = it
+                    if (isError && it.isNotBlank()) isError = false
+                },isError = isError,
                 placeholder = { Text(stringResource(R.string.cariKota)) },
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            if (searchText.isNotBlank()) {
-                                val city = searchText.trim()
-                                prayerViewModel.fetchPrayerTimes(context, city)
-                                searchText = ""
-                                keyboardController?.hide()
-                            }
+                                    if (searchText.isNotBlank()) {
+                                        val city = searchText.trim()
+                                        prayerViewModel.fetchPrayerTimes(context, city)
+                                        searchText = ""
+                                        isError = false
+                                        keyboardController?.hide()
+                                    } else {
+                                        isError = true
+                                    }
                         },
                         enabled = searchText.isNotBlank()
                     ) {
                         Icon(Icons.Default.Search, contentDescription = stringResource(R.string.cari))
                     }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,11 +174,20 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
                             prayerViewModel.fetchPrayerTimes(context, city)
                             searchText = ""
                             keyboardController?.hide()
+                        } else {
+                            isError = true
                         }
                     }
                 )
             )
-
+            if (isError) {
+                Text(
+                    text = stringResource(R.string.peringatanKosong),
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 24.dp, bottom = 8.dp) // agak masuk dari kiri
+                )
+            }
             if (searchText.isNotBlank()) {
                 val suggestions = availableCities.filter {
                     it.contains(searchText.trim(), ignoreCase = true)

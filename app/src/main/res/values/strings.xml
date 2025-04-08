@@ -17,4 +17,5 @@
     <string name="cariKota">Cari Kota</string>
     <string name="kota">Kota %1$s</string>
     <string name="lokasi">Lokasi</string>
+    <string name="peringatanKosong">Kolom pencarian tidak boleh kosong!</string>
 </resources>

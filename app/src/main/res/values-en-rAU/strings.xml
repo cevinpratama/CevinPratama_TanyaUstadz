@@ -18,4 +18,6 @@
     <string name="cariKota">Find a City</string>
     <string name="kota">%1$s City</string>
     <string name="lokasi">Location</string>
+    <string name="peringatanKosong">Search field cannot be empty!</string>
+
 </resources>
