@@ -3,7 +3,7 @@ package com.example.tanya_ustadz
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.widget.Toast
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -46,7 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -60,62 +60,36 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import com.example.tanya_ustadz.api.PrayerItem
-import com.example.tanya_ustadz.api.PrayerTimesResponse
-import com.example.tanya_ustadz.api.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
+
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrayerTimeScreen() {
+fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val colorText = if (isDark) Color.White else Color.Black
     val context = LocalContext.current
 
-    val defaultCity = stringResource(R.string.kota)
-    var kota by remember { mutableStateOf(defaultCity) }
-    var searchText by remember { mutableStateOf("") }
-    var recentSearches by remember { mutableStateOf(listOf<String>()) }
-    var prayerTimes by remember { mutableStateOf<PrayerTimesResponse?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    var currentPrayer by remember { mutableStateOf("") }
+    var searchText by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val kota by prayerViewModel.kota
+    val prayerTimes by prayerViewModel.prayerTimes
+    val recentSearches by prayerViewModel.recentSearches
+    val isLoading by prayerViewModel.isLoading
 
     val availableCities = listOf("Jakarta", "Bandung", "Surabaya", "Yogyakarta", "Medan")
 
-    fun fetchPrayerTimes(city: String) {
-        isLoading = true
-        val call = RetrofitClient.apiService.getPrayerTimes(city)
-        call.enqueue(object : Callback<PrayerTimesResponse> {
-            override fun onResponse(call: Call<PrayerTimesResponse>, response: Response<PrayerTimesResponse>) {
-                isLoading = false
-                if (response.isSuccessful) {
-                    prayerTimes = response.body()
-                    if (!recentSearches.contains(city)) {
-                        recentSearches = (listOf(city) + recentSearches).take(5)
-                    }
-                } else {
-                    Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<PrayerTimesResponse>, t: Throwable) {
-                isLoading = false
-                Toast.makeText(context, t.message ?: context.getString(R.string.error), Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
     LaunchedEffect(kota) {
-        fetchPrayerTimes(kota)
+        prayerViewModel.fetchPrayerTimes(context, kota)
     }
 
     Scaffold(
@@ -151,26 +125,24 @@ fun PrayerTimeScreen() {
                     end = 16.dp
                 )
                 .verticalScroll(rememberScrollState())
-        )
-        {
+        ) {
             OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                placeholder = { Text(stringResource(R.string.cariKota)) },
+                placeholder = { Text(stringResource(R.string.cari)) },
                 trailingIcon = {
                     IconButton(
                         onClick = {
                             if (searchText.isNotBlank()) {
-                                kota = searchText.trim()
-                                fetchPrayerTimes(kota)
+                                val city = searchText.trim()
+                                prayerViewModel.fetchPrayerTimes(context, city)
                                 searchText = ""
                                 keyboardController?.hide()
-
                             }
                         },
                         enabled = searchText.isNotBlank()
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = "Cari")
+                        Icon(Icons.Default.Search, contentDescription = stringResource(R.string.cari))
                     }
                 },
                 modifier = Modifier
@@ -184,15 +156,14 @@ fun PrayerTimeScreen() {
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         if (searchText.isNotBlank()) {
-                            kota = searchText.trim()
-                            fetchPrayerTimes(kota)
+                            val city = searchText.trim()
+                            prayerViewModel.fetchPrayerTimes(context, city)
                             searchText = ""
                             keyboardController?.hide()
                         }
                     }
                 )
             )
-
 
             if (searchText.isNotBlank()) {
                 val suggestions = availableCities.filter {
@@ -205,9 +176,8 @@ fun PrayerTimeScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                kota = suggestion
                                 searchText = ""
-                                fetchPrayerTimes(suggestion)
+                                prayerViewModel.fetchPrayerTimes(context, suggestion)
                             }
                             .padding(vertical = 8.dp)
                     )
@@ -227,8 +197,7 @@ fun PrayerTimeScreen() {
                     items(recentSearches) { city ->
                         AssistChip(
                             onClick = {
-                                kota = city
-                                fetchPrayerTimes(city)
+                                prayerViewModel.fetchPrayerTimes(context, city)
                             },
                             label = { Text(city) }
                         )
@@ -249,10 +218,11 @@ fun PrayerTimeScreen() {
                     } catch (e: Exception) {
                         prayerItem.date_for
                     }
-                    currentPrayer = getCurrentPrayer(prayerItem)
+
+                    val currentPrayer = getCurrentPrayer(prayerItem)
 
                     Text(
-                        text = "Kota ${kota.replaceFirstChar { it.uppercase() }}",
+                        text = stringResource(R.string.kota, kota.replaceFirstChar { it.uppercase() }),
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
                         color = colorText,
@@ -297,8 +267,8 @@ fun PrayerTimeScreen() {
             }
         }
     }
-
 }
+
 
 
 
@@ -382,12 +352,18 @@ fun getCurrentPrayer(prayerItem: PrayerItem): String {
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
     val now = LocalTime.now()
 
+    fun parsePrayerTime(timeStr: String): LocalTime {
+        val formattedTime = timeStr.replaceFirst("am", "AM").replaceFirst("pm", "PM")
+        return LocalTime.parse(formattedTime, timeFormatter)
+    }
+
+
     return try {
-        val fajr = LocalTime.parse(prayerItem.fajr.lowercase(), timeFormatter)
-        val dhuhr = LocalTime.parse(prayerItem.dhuhr.lowercase(), timeFormatter)
-        val asr = LocalTime.parse(prayerItem.asr.lowercase(), timeFormatter)
-        val maghrib = LocalTime.parse(prayerItem.maghrib.lowercase(), timeFormatter)
-        val isha = LocalTime.parse(prayerItem.isha.lowercase(), timeFormatter)
+        val fajr = parsePrayerTime(prayerItem.fajr)
+        val dhuhr = parsePrayerTime(prayerItem.dhuhr)
+        val asr = parsePrayerTime(prayerItem.asr)
+        val maghrib = parsePrayerTime(prayerItem.maghrib)
+        val isha = parsePrayerTime(prayerItem.isha)
 
         when {
             now.isBefore(fajr) -> "Subuh"
@@ -397,8 +373,9 @@ fun getCurrentPrayer(prayerItem: PrayerItem): String {
             now.isBefore(isha) -> "Isya"
             else -> "Subuh"
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (e: DateTimeParseException) {
+        Log.e("PrayerTime", "Format waktu salah: ${e.message}")
         "Subuh"
     }
 }
+
