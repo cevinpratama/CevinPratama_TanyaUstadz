@@ -129,7 +129,7 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
             OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                placeholder = { Text(stringResource(R.string.cari)) },
+                placeholder = { Text(stringResource(R.string.cariKota)) },
                 trailingIcon = {
                     IconButton(
                         onClick = {
@@ -277,22 +277,23 @@ fun share(context: Context, date: String, prayerItem: PrayerItem, kota: String) 
     val jadwal = context.getString(R.string.jadwal)
     val textToShare = """
         $jadwal - $date
-        Lokasi: $kota
+        ${context.getString(R.string.lokasi)}: $kota
         
-        Subuh: ${prayerItem.fajr}
-        Dzuhur: ${prayerItem.dhuhr}
-        Ashar: ${prayerItem.asr}
-        Maghrib: ${prayerItem.maghrib}
-        Isya: ${prayerItem.isha}
+        ${context.getString(R.string.subuh)}: ${prayerItem.fajr}
+        ${context.getString(R.string.dzuhur)}: ${prayerItem.dhuhr}
+        ${context.getString(R.string.ashar)}: ${prayerItem.asr}
+        ${context.getString(R.string.maghrib)}: ${prayerItem.maghrib}
+        ${context.getString(R.string.isya)}: ${prayerItem.isha}
+
     """.trimIndent()
 
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "Jadwal Sholat")
+        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.jadwal))
         putExtra(Intent.EXTRA_TEXT, textToShare)
     }
 
-    val chooser = Intent.createChooser(intent, "Bagikan jadwal via...")
+    val chooser = Intent.createChooser(intent, context.getString(R.string.opsiBagikan))
     context.startActivity(chooser)
 }
 

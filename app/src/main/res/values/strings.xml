@@ -5,6 +5,7 @@
     <string name="akun">Akun</string>
     <string name="HalamanCari">Jawaban Ustadz</string>
     <string name="bagikanJadwal">Bagikan Jadwal</string>
+    <string name="opsiBagikan">Bagikan jadwal via..</string>
     <string name="subuh">Subuh</string>
     <string name="dzuhur">Dzuhur</string>
     <string name="ashar">Ashar</string>
@@ -12,12 +13,8 @@
     <string name="isya">Isya</string>
     <string name="error">Terjadi Kesalahan</string>
     <string name="pencarianTerakhir">Pencarian Terakhir</string>
-    <string name="cari">Cari Kota</string>
+    <string name="cari">Cari</string>
+    <string name="cariKota">Cari Kota</string>
     <string name="kota">Kota %1$s</string>
-
-
-
-
-
-
+    <string name="lokasi">Lokasi</string>
 </resources>

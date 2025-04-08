@@ -53,7 +53,7 @@ fun CariScreen() {
 
                         ) {
                             Text(
-                                text = stringResource(id = R.string.cari),
+                                text = stringResource(id = R.string.HalamanCari),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 17.sp,
                                 fontStyle = FontStyle.Italic,
@@ -73,7 +73,7 @@ fun CariScreen() {
                             IconButton(onClick = { }) {
                                 androidx.compose.material3.Icon(
                                     Icons.Default.Search,
-                                    contentDescription = "Search",
+                                    contentDescription = stringResource(R.string.cari),
                                 )
                             }
                         }

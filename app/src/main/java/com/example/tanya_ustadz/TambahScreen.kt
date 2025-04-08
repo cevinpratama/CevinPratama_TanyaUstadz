@@ -73,7 +73,7 @@ fun TambahScreen() {
                             IconButton(onClick = { }) {
                                 androidx.compose.material3.Icon(
                                     Icons.Default.Search,
-                                    contentDescription = "Search",
+                                    contentDescription = stringResource(R.string.cari),
 
                                 )
                             }
