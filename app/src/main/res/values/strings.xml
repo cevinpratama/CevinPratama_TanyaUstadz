@@ -1,21 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tanya_Ustadz</string>
-    <string name="jadwal">Jadwal Sholat</string>
-    <string name="tambah">Tanya Ustadz</string>
-    <string name="akun">Akun</string>
-    <string name="HalamanCari">Jawaban Ustadz</string>
-    <string name="bagikanJadwal">Bagikan Jadwal</string>
-    <string name="opsiBagikan">Bagikan jadwal via..</string>
-    <string name="subuh">Subuh</string>
-    <string name="dzuhur">Dzuhur</string>
-    <string name="ashar">Ashar</string>
+    <string name="app_name">Ask Ustadz</string>
+    <string name="jadwal">Prayer Schedule</string>
+    <string name="tambah">Ask The Ustadz</string>
+    <string name="akun">Account</string>
+    <string name="HalamanCari">Ustadz\'Answer</string>
+    <string name="bagikanJadwal">Share Schedule</string>
+    <string name="opsiBagikan">Share Schedule via</string>
+    <string name="subuh">Fajr</string>
+    <string name="dzuhur">Dhuhr</string>
+    <string name="ashar">Asr</string>
     <string name="maghrib">Maghrib</string>
-    <string name="isya">Isya</string>
-    <string name="error">Terjadi Kesalahan</string>
-    <string name="pencarianTerakhir">Pencarian Terakhir</string>
-    <string name="cari">Cari</string>
-    <string name="cariKota">Cari Kota</string>
-    <string name="kota">Kota %1$s</string>
-    <string name="lokasi">Lokasi</string>
-    <string name="peringatanKosong">Kolom pencarian tidak boleh kosong!</string>
+    <string name="isya">Isha</string>
+    <string name="error">Error</string>
+    <string name="pencarianTerakhir">Last Search</string>
+    <string name="cari">Search</string>
+    <string name="cariKota">Find a City</string>
+    <string name="kota">%1$s City</string>
+    <string name="lokasi">Location</string>
+    <string name="peringatanKosong">Search field cannot be empty!</string>
+    <string name="halamanTentang">About Screen</string>
+    <string name="aboutDeskripsi">Ask Ustadz is an application to see the prayer schedule and ask the ustadz.</string>
+
 </resources>
