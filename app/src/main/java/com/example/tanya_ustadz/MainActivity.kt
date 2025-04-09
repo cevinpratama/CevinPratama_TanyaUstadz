@@ -56,8 +56,14 @@ class MainActivity : ComponentActivity() {
                                     navController = navController,
                                     startDestination = "jadwal"
                                 ) {
-                                    composable("jadwal") { PrayerTimeScreen() }
+                                    composable("jadwal") { PrayerTimeScreen(onNavigateToAbout = { navController.navigate("about") },
+                                        onLogout = {
+                                            navController.navigate("login") {
+                                                popUpTo("jadwal") { inclusive = true }
+                                            }
+                                        }) }
                                     composable("cari") { CariScreen() }
+                                    composable("about") { AboutScreen(onBack = { navController.popBackStack() }) }
                                     composable("tambah") { TambahScreen() }
                                     composable("akun") { AkunScreen() }
                                 }

@@ -1,5 +1,7 @@
 package com.example.tanya_ustadz
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -25,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
@@ -33,8 +36,11 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -71,25 +77,33 @@ import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 
+@SuppressLint("ContextCastToActivity")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
+fun PrayerTimeScreen(
+    onNavigateToAbout: () -> Unit,
+    onLogout: () -> Unit,
+    prayerViewModel: PrayerViewModel = viewModel()
+) {
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val colorText = if (isDark) Color.White else Color.Black
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
+
     var isError by remember { mutableStateOf(false) }
-
     var searchText by rememberSaveable { mutableStateOf("") }
-    val keyboardController = LocalSoftwareKeyboardController.current
+    var menuExpanded by remember { mutableStateOf(false) }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
     val kota by prayerViewModel.kota
     val prayerTimes by prayerViewModel.prayerTimes
     val recentSearches by prayerViewModel.recentSearches
     val isLoading by prayerViewModel.isLoading
+    val activity = (LocalContext.current as? Activity)
+
 
     val availableCities = listOf("Jakarta", "Bandung", "Surabaya", "Yogyakarta", "Medan")
 
@@ -117,14 +131,43 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = cardColor),
-                modifier = Modifier.shadow(4.dp).height(70.dp)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = cardColor,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                modifier = Modifier
+                    .shadow(4.dp)
+                    .height(70.dp),
+                actions = {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Pengaturan")
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Tentang Aplikasi") },
+                            onClick = {
+                                menuExpanded = false
+                                onNavigateToAbout()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Keluar") },
+                            onClick = {
+                                menuExpanded = false
+                                activity?.finishAffinity()
+                            }
+                        )
+                    }
+
+                }
             )
         },
         containerColor = backgroundColor
-
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .padding(
@@ -136,37 +179,36 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
         ) {
             OutlinedTextField(
                 value = searchText,
-                onValueChange = {  searchText = it
+                onValueChange = {
+                    searchText = it
                     if (isError && it.isNotBlank()) isError = false
-                },isError = isError,
+                },
+                isError = isError,
                 placeholder = { Text(stringResource(R.string.cariKota)) },
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                                    if (searchText.isNotBlank()) {
-                                        val city = searchText.trim()
-                                        prayerViewModel.fetchPrayerTimes(context, city)
-                                        searchText = ""
-                                        isError = false
-                                        keyboardController?.hide()
-                                    } else {
-                                        isError = true
-                                    }
+                            if (searchText.isNotBlank()) {
+                                val city = searchText.trim()
+                                prayerViewModel.fetchPrayerTimes(context, city)
+                                searchText = ""
+                                isError = false
+                                keyboardController?.hide()
+                            } else {
+                                isError = true
+                            }
                         },
                         enabled = searchText.isNotBlank()
                     ) {
                         Icon(Icons.Default.Search, contentDescription = stringResource(R.string.cari))
                     }
-
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         if (searchText.isNotBlank()) {
@@ -185,9 +227,10 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
                     text = stringResource(R.string.peringatanKosong),
                     color = Color.Red,
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(start = 24.dp, bottom = 8.dp) // agak masuk dari kiri
+                    modifier = Modifier.padding(start = 24.dp, bottom = 8.dp)
                 )
             }
+
             if (searchText.isNotBlank()) {
                 val suggestions = availableCities.filter {
                     it.contains(searchText.trim(), ignoreCase = true)
@@ -291,6 +334,7 @@ fun PrayerTimeScreen(prayerViewModel: PrayerViewModel = viewModel()) {
         }
     }
 }
+
 
 
 
