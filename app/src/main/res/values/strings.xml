@@ -21,5 +21,11 @@
     <string name="peringatanKosong">Search field cannot be empty!</string>
     <string name="halamanTentang">About Screen</string>
     <string name="aboutDeskripsi">Ask Ustadz is an application to see the prayer schedule and ask the ustadz.</string>
+    <string name="WaktuSalah">Incorrect Time Format</string>
+    <string name="error_default_prayer_time">Using the default prayer time due to an error</string>
+    <string name="kotaKosong">City Names Must Not Be Blank</string>
+    <string name="errorData">failed to retrieve data</string>
+
+
 
 </resources>

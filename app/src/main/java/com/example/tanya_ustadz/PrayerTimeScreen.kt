@@ -285,8 +285,7 @@ fun PrayerTimeScreen(
                         prayerItem.date_for
                     }
 
-                    val currentPrayer = getCurrentPrayer(prayerItem)
-
+                    val currentPrayer = getCurrentPrayer(context, prayerItem)
                     Text(
                         text = stringResource(R.string.kota, kota.replaceFirstChar { it.uppercase() }),
                         fontSize = 26.sp,
@@ -364,17 +363,6 @@ fun share(context: Context, date: String, prayerItem: PrayerItem, kota: String) 
     context.startActivity(chooser)
 }
 
-//
-//@Composable
-//fun PrayerTimeColumn(name: String, time: String, center: Boolean = false) {
-//    Column(
-//        horizontalAlignment = if (center) Alignment.CenterHorizontally else Alignment.Start
-//    ) {
-//        Text(text = time, fontSize = 25.sp, fontStyle = FontStyle.Italic)
-//        Spacer(modifier = Modifier.height(8.dp))
-//        Text(text = name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-//    }
-//}
 @Composable
 fun PrayerRow(name: String, time: String, currentPrayer: String, center: Boolean = false) {
     val isDark = isSystemInDarkTheme()
@@ -415,8 +403,9 @@ fun PrayerRow(name: String, time: String, currentPrayer: String, center: Boolean
     }
 }
 
+@SuppressLint("StringFormatInvalid")
 @RequiresApi(Build.VERSION_CODES.O)
-fun getCurrentPrayer(prayerItem: PrayerItem): String {
+fun getCurrentPrayer(context: Context, prayerItem: PrayerItem): String {
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
     val now = LocalTime.now()
 
@@ -424,7 +413,6 @@ fun getCurrentPrayer(prayerItem: PrayerItem): String {
         val formattedTime = timeStr.replaceFirst("am", "AM").replaceFirst("pm", "PM")
         return LocalTime.parse(formattedTime, timeFormatter)
     }
-
 
     return try {
         val fajr = parsePrayerTime(prayerItem.fajr)
@@ -434,16 +422,20 @@ fun getCurrentPrayer(prayerItem: PrayerItem): String {
         val isha = parsePrayerTime(prayerItem.isha)
 
         when {
-            now.isBefore(fajr) -> "Subuh"
-            now.isBefore(dhuhr) -> "Dzuhur"
-            now.isBefore(asr) -> "Ashar"
-            now.isBefore(maghrib) -> "Maghrib"
-            now.isBefore(isha) -> "Isya"
-            else -> "Subuh"
+            now.isBefore(fajr) -> context.getString(R.string.subuh)
+            now.isBefore(dhuhr) -> context.getString(R.string.dzuhur)
+            now.isBefore(asr) -> context.getString(R.string.ashar)
+            now.isBefore(maghrib) -> context.getString(R.string.maghrib)
+            now.isBefore(isha) -> context.getString(R.string.isya)
+            else -> context.getString(R.string.subuh)
         }
     } catch (e: DateTimeParseException) {
-        Log.e("PrayerTime", "Format waktu salah: ${e.message}")
-        "Subuh"
+        val errorMessage = context.getString(R.string.WaktuSalah, e.message ?: "unknown")
+        Log.e("PrayerTime", errorMessage)
+        context.getString(R.string.subuh)
+    } catch (e: Exception) {
+        Log.e("PrayerTime", context.getString(R.string.WaktuSalah), e)
+        context.getString(R.string.subuh)
     }
 }
 

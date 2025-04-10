@@ -32,13 +32,13 @@ class PrayerViewModel : ViewModel() {
                         recentSearches.value = (listOf(city) + recentSearches.value).take(5)
                     }
                 } else {
-                    Toast.makeText(context, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.errorData), Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<PrayerTimesResponse>, t: Throwable) {
                 isLoading.value = false
-                Toast.makeText(context, t.message ?: "Kesalahan", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, t.message ?: context.getString(R.string.error), Toast.LENGTH_SHORT).show()
             }
         })
     }

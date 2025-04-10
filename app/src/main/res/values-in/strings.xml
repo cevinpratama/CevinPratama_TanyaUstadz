@@ -20,4 +20,11 @@
     <string name="peringatanKosong">Kolom pencarian tidak boleh kosong!</string>
     <string name="halamanTentang">Halaman Tentang</string>
     <string name="aboutDeskripsi">Tanya Ustadz adalah aplikasi untuk melihat jadwal sholat dan bertanya kepada ustadz.</string>
+    <string name="WaktuSalah">Format Waktu Salah</string>
+    <string name="error_default_prayer_time">Menggunakan waktu sholat default karena terjadi error</string>
+    <string name="kotaKosong">Nama Kota Tidak Boleh Kosong</string>
+    <string name="errorData">Gagal Mengambil data</string>
+
+
+
 </resources>
