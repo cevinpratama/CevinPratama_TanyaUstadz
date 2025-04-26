@@ -25,7 +25,7 @@
     <string name="error_default_prayer_time">Using the default prayer time due to an error</string>
     <string name="kotaKosong">City Names Must Not Be Blank</string>
     <string name="errorData">failed to retrieve data</string>
-
+    <string name="tambah_doa">Add Doa</string>
 
 
 </resources>

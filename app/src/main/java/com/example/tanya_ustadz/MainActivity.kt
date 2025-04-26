@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
                                     composable("about") { AboutScreen(onBack = { navController.popBackStack() }) }
                                     composable("tambah") { TambahScreen() }
                                     composable("akun") { AkunScreen() }
+                                    composable("tambah_doa") { TambahDoaScreen() }
                                 }
                             }
                             BottomBawah(navController)

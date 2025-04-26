@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ListItemDefaults.contentColor
@@ -43,7 +44,9 @@ fun bottomNavItems(): List<BottomNavItems> {
             BottomNavItems("", "jadwal") { Gambar(contentColor) },
             BottomNavItems("", "cari") { Icon(Icons.Default.Search) },
             BottomNavItems("", "tambah") { Icon(Icons.Default.Add) },
-            BottomNavItems("", "akun") { Icon(Icons.Default.Person) }
+            BottomNavItems("", "akun") { Icon(Icons.Default.Person) },
+            BottomNavItems("", "tambah_doa") { Icon(Icons.Default.Create) }
+
 
         )
     }
