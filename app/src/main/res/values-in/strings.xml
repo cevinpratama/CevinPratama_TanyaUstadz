@@ -25,6 +25,18 @@
     <string name="kotaKosong">Nama Kota Tidak Boleh Kosong</string>
     <string name="errorData">Gagal Mengambil data</string>
     <string name="tambah_doa">Tambah Doa</string>
+    <string name="list_kosong">Belum Ada Doa</string>
+    <string name="edit_doa">Ubah Doa</string>
+    <string name="kembali">Kembali</string>
+    <string name="invalid">Setiap kolom tidak boleh kosong</string>
+    <string name="simpan">Simpan</string>
+    <string name="nama_doa">Nama Doa</string>
+    <string name="isi_doa">Isi Doa</string>
+    <string name="lainnya">Opsi Lainnya</string>
+    <string name="hapus">Delet Prayer</string>
+
+
+
 
 
 

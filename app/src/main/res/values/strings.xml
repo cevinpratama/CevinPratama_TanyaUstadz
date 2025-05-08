@@ -26,6 +26,16 @@
     <string name="kotaKosong">City Names Must Not Be Blank</string>
     <string name="errorData">failed to retrieve data</string>
     <string name="tambah_doa">Add Doa</string>
+    <string name="list_kosong">No prayers yet</string>
+    <string name="edit_doa">Change Prayer</string>
+    <string name="kembali">Back</string>
+    <string name="invalid">Each column cannot be blank</string>
+    <string name="simpan">Save</string>
+    <string name="nama_doa">Prayer Name</string>
+    <string name="isi_doa">Prayer Contents</string>
+    <string name="lainnya">More Options</string>
+    <string name="hapus">Hapus Doa</string>
+
 
 
 </resources>
