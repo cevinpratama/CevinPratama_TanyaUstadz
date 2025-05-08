@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.tanya_ustadz.navigation.Screen
 import com.example.tanya_ustadz.ui.theme.Tanya_UstadzTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +69,18 @@ class MainActivity : ComponentActivity() {
                                     composable("about") { AboutScreen(onBack = { navController.popBackStack() }) }
                                     composable("tambah") { TambahScreen() }
                                     composable("akun") { AkunScreen() }
-                                    composable("tambah_doa") { TambahDoaScreen() }
+                                    composable("tambah_doa") { TambahDoaScreen(navController) }
+                                    composable(Screen.FormBaru.route) {
+                                        DetailScreen(navController)
+                                    }
+                                    composable(
+                                        route = "detailScreen/{id}",
+                                        arguments = listOf(navArgument("id") { type = NavType.LongType })
+                                    ) { backStackEntry ->
+                                        val id = backStackEntry.arguments?.getLong("id")
+                                        DetailScreen(id = id, navController = navController)
+                                    }
+
                                 }
                             }
                             BottomBawah(navController)
