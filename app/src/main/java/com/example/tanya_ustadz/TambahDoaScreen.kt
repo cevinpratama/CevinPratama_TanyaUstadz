@@ -165,9 +165,11 @@ fun ScreenContent(
                 contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 84.dp)
             ) {
                 items(data) {
-                    GridItem(doa = it) {
-                        navController.navigate(Screen.FormUbah.withId(it.id))
-                    }
+                    GridItem(
+                        doa = it,
+                        onClick = { navController.navigate(Screen.FormUbah.withId(it.id)) },
+                        onFavoriteClick = { isFav -> viewModel.updateFavorite(it.id, isFav) }
+                    )
                 }
             }
         }
@@ -200,7 +202,7 @@ fun ListItem(doa: Doa, onClick: () -> Unit, onFavoriteClick: (Boolean) -> Unit) 
 }
 
 @Composable
-fun GridItem(doa: Doa, onClick: () -> Unit) {
+fun GridItem(doa: Doa, onClick: () -> Unit, onFavoriteClick: (Boolean) -> Unit) {
     val isDark = isSystemInDarkTheme()
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     Card(
@@ -226,6 +228,13 @@ fun GridItem(doa: Doa, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
             Text(text = doa.tanggal)
+            IconButton(onClick = { onFavoriteClick(!doa.isFavorite) }) {
+                Icon(
+                    imageVector = if (doa.isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = "Favorit",
+                    tint = if (doa.isFavorite) Color.Yellow else Color.Gray
+                )
+            }
         }
     }
 }
