@@ -34,6 +34,11 @@
     <string name="isi_doa">Isi Doa</string>
     <string name="lainnya">Opsi Lainnya</string>
     <string name="hapus">Delet Prayer</string>
+    <string name="pesan_hapus">Hapus Doa ini?</string>
+    <string name="tombol_hapus">Hapus</string>
+    <string name="tombol_batal">Batal</string>
+    <string name="list">Tampilan List</string>
+    <string name="grid">Tampilan Grid</string>
 
 
 
