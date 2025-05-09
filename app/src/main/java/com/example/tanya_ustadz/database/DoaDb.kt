@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.tanya_ustadz.model.Doa
 
-@Database(entities = [Doa::class], version = 1, exportSchema = false)
+@Database(entities = [Doa::class], version = 2, exportSchema = false)
 abstract class DoaDb : RoomDatabase() {
 
     abstract val dao:DoaDao

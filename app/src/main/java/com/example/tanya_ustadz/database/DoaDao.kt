@@ -22,6 +22,10 @@ interface DoaDao {
     @Query("SELECT * FROM doa WHERE id = :id")
     suspend fun getDoaById(id : Long):Doa?
 
+    @Query("UPDATE doa SET isFavorite = :favorite WHERE id = :id")
+    suspend fun updateFavorite(id: Long, favorite: Boolean)
+
+
     @Query("DELETE FROM doa WHERE id = :id")
     suspend fun deleteById(id : Long)
 }

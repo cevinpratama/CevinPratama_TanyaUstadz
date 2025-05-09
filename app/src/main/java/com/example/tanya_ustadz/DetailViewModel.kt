@@ -45,4 +45,6 @@ class DetailViewModel (private val dao: DoaDao): ViewModel(){
             dao.deleteById(id)
         }
     }
+
+
 }

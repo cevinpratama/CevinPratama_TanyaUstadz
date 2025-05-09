@@ -70,7 +70,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
 
 
     Scaffold(
-        containerColor = backgroundColor, // Background scaffold
+        containerColor = backgroundColor,
         topBar = {
 
             TopAppBar(
@@ -79,7 +79,7 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.kembali),
-                            tint = if (isDark) Color.White else Color.Black // Sesuaikan warna icon
+                            tint = if (isDark) Color.White else Color.Black
                         )
                     }
                 },
@@ -90,9 +90,9 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                         Text(stringResource(R.string.edit_doa))
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = cardColor, // Warna top bar putih
-                    titleContentColor = if (isDark) Color.White else Color.Black, // Warna teks
-                    navigationIconContentColor = if (isDark) Color.White else Color.Black // Warna icon
+                    containerColor = cardColor,
+                    titleContentColor = if (isDark) Color.White else Color.Black,
+                    navigationIconContentColor = if (isDark) Color.White else Color.Black
                 ),
 
                 actions = {

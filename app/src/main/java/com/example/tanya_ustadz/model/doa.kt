@@ -9,5 +9,6 @@ data class Doa(
     val id: Long = 0L,
     val nama_doa: String,
     val isi: String,
-    val tanggal: String
+    val tanggal: String,
+    val isFavorite: Boolean = false
 )

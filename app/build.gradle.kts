@@ -69,5 +69,10 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.navigation.compose.v275)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.compose.material.icons.extended)
+
+
+
 
 }
