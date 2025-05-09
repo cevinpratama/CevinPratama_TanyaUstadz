@@ -21,7 +21,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +38,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.tanya_ustadz.util.ViewModelFactory
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 
 const val KEY_ID_DOA = "idDoa"
@@ -46,14 +51,16 @@ const val KEY_ID_DOA = "idDoa"
 @Composable
 fun DetailScreen(navController: NavHostController, id: Long? = null) {
     val context = LocalContext.current
-    val factory = ViewModelFactory (context)
+    val factory = ViewModelFactory(context)
     val viewModel: DetailViewModel = viewModel(factory = factory)
     var nama_doa by remember { mutableStateOf("") }
     var isi by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
-    val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(id) {
         if (id != null) {
@@ -68,11 +75,9 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         }
     }
 
-
     Scaffold(
         containerColor = backgroundColor,
         topBar = {
-
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -89,38 +94,36 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
                     else
                         Text(stringResource(R.string.edit_doa))
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = cardColor,
-                    titleContentColor = if (isDark) Color.White else Color.Black,
-                    navigationIconContentColor = if (isDark) Color.White else Color.Black
-                ),
-
                 actions = {
                     IconButton(onClick = {
-                        if (nama_doa == "" || isi == "" ){
+                        if (nama_doa == "" || isi == "") {
                             Toast.makeText(context, R.string.invalid, Toast.LENGTH_SHORT).show()
                             return@IconButton
                         }
-                        if (id == null){
-                            viewModel.insert(nama_doa,isi)
-                        }else {
-                            viewModel.update(id,nama_doa, isi)
+                        if (id == null) {
+                            viewModel.insert(nama_doa, isi)
+                        } else {
+                            viewModel.update(id, nama_doa, isi)
                         }
-                        navController.popBackStack()}) {
+                        navController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
                             contentDescription = stringResource(R.string.simpan),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    if (id != null){
+
+                    if (id != null) {
                         DeleteAction {
                             showDialog = true
                         }
+
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         FormDoa(
             title = nama_doa,
@@ -131,13 +134,26 @@ fun DetailScreen(navController: NavHostController, id: Long? = null) {
         )
         if (id != null && showDialog){
             DisplayAlertDialog(
-                onDismissRequest = {showDialog = false}
-            ) {
-                showDialog = false
-                viewModel.delete(id)
-                navController.popBackStack()
-            }
+                onDismissRequest = { showDialog = false },
+                onConfirm = {
+                    showDialog = false
+                    viewModel.delete(id) { deletedDoa ->
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Doa dihapus",
+                                actionLabel = "Undo",
+                                duration = SnackbarDuration.Short
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.restore(deletedDoa.id)
+                            }
+                        }
+                    }
+                    navController.popBackStack()
+                }
+            )
         }
+
 
     }
 }
@@ -154,35 +170,49 @@ fun FormDoa(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        OutlinedTextField(
-            value = title,
-            onValueChange = onTitleChange,
-            label = { Text(text = stringResource(R.string.nama_doa)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = desc,
-            onValueChange = onDescChange,
-            label = { Text(stringResource(R.string.isi_doa)) },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column {
+            OutlinedTextField(
+                value = title,
+                onValueChange = onTitleChange,
+                label = { Text(text = stringResource(R.string.nama_doa)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = stringResource(R.string.contoh_doa),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+
+        Column {
+            OutlinedTextField(
+                value = desc,
+                onValueChange = onDescChange,
+                label = { Text(stringResource(R.string.isi_doa)) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = stringResource(R.string.contoh_isiDoa),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
     }
 }
-
-
-
 @Composable
-fun DeleteAction(delete: () -> Unit){
+fun DeleteAction(onConfirmRequest: () -> Unit){
     var expanded by remember { mutableStateOf(false) }
-    IconButton (onClick = {expanded = true}){
+    IconButton(onClick = { expanded = true }) {
         Icon(
             imageVector = Icons.Filled.MoreVert,
             contentDescription = stringResource(R.string.lainnya),
@@ -198,11 +228,10 @@ fun DeleteAction(delete: () -> Unit){
                 },
                 onClick = {
                     expanded = false
-                    delete()
+                    onConfirmRequest()
                 }
             )
         }
     }
 }
-
 

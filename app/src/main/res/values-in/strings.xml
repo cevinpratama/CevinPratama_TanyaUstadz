@@ -33,13 +33,16 @@
     <string name="nama_doa">Nama Doa</string>
     <string name="isi_doa">Isi Doa</string>
     <string name="lainnya">Opsi Lainnya</string>
-    <string name="hapus">Delet Prayer</string>
+    <string name="hapus">Delete Prayer</string>
     <string name="pesan_hapus">Hapus Doa ini?</string>
     <string name="tombol_hapus">Hapus</string>
     <string name="tombol_batal">Batal</string>
     <string name="list">Tampilan List</string>
     <string name="grid">Tampilan Grid</string>
-
+    <string name="contoh_isiDoa">Contoh: Bismillahirrahmanirrahim. Alhamdulillahilladzi…</string>
+    <string name="contoh_doa">Contoh: Doa Sebelum Makan</string>
+    <string name="trash_kosong">Tidak ada doa yang dihapus</string>
+    <string name="peringatan_hapus">Apakah kamu yakin ingin menghapus doa ini</string>
 
 
 

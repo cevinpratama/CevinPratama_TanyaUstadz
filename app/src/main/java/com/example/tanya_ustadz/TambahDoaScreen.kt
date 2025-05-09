@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.*
@@ -93,6 +94,16 @@ fun TambahDoaScreen(navController: NavHostController) {
                                 tint = if (showFavoritesOnly) Color.Yellow else plusColor
                             )
                         }
+                        IconButton(onClick = {
+                            navController.navigate("recycle_bin")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete, // Atau pakai icon lain seperti `Icons.Default.DeleteOutline`
+                                contentDescription = "Recycle Bin",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
                     }
                 )
             }

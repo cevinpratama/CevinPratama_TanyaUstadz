@@ -10,5 +10,6 @@ data class Doa(
     val nama_doa: String,
     val isi: String,
     val tanggal: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val isDeleted: Boolean = false
 )

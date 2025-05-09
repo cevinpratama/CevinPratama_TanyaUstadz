@@ -34,12 +34,18 @@
     <string name="nama_doa">Prayer Name</string>
     <string name="isi_doa">Prayer Contents</string>
     <string name="lainnya">More Options</string>
-    <string name="hapus">Hapus Doa</string>
+    <string name="hapus">Delete Prayer</string>
     <string name="pesan_hapus">Delete this Prayer?</string>
     <string name="tombol_hapus">Delete</string>
     <string name="tombol_batal">Cancel</string>
     <string name="list">List Display</string>
     <string name="grid">Grid Display</string>
+    <string name="contoh_isiDoa">Example: Bismillahirrahmanirrahim. Alhamdulillahilladzi..</string>
+    <string name="contoh_doa">Example: Prayer Eating</string>
+    <string name="trash_kosong">No prayers deleted</string>
+    <string name="peringatan_hapus">Are you sure you want to delete this prayer?</string>
+
+
 
 
 

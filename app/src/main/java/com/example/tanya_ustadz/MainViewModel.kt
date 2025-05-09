@@ -16,6 +16,11 @@ import kotlinx.coroutines.flow.combine
 class MainViewModel(private val dao: DoaDao) : ViewModel() {
     private val _showFavoritesOnly = mutableStateOf(false)
     val showFavoritesOnly: State<Boolean> = _showFavoritesOnly
+    val data: StateFlow<List<Doa>> = dao.getDoa().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
+    )
     val filteredData: StateFlow<List<Doa>> = combine(
         dao.getDoa(),
         snapshotFlow { _showFavoritesOnly.value }
@@ -30,15 +35,22 @@ class MainViewModel(private val dao: DoaDao) : ViewModel() {
         _showFavoritesOnly.value = !_showFavoritesOnly.value
     }
 
-    val data: StateFlow<List<Doa>> = dao.getDoa().stateIn(
+
+    fun updateFavorite(id: Long, favorite: Boolean) {
+        viewModelScope.launch {
+            dao.updateFavorite(id, favorite)
+        }
+    }
+    val deletedData: StateFlow<List<Doa>> = dao.getDeletedDoa().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()
     )
 
-    fun updateFavorite(id: Long, favorite: Boolean) {
+    fun restore(id: Long) {
         viewModelScope.launch {
-            dao.updateFavorite(id, favorite)
+            dao.restoreById(id)
+
         }
     }
 }

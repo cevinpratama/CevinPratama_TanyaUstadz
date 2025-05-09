@@ -40,9 +40,18 @@ class DetailViewModel (private val dao: DoaDao): ViewModel(){
         }
     }
 
-    fun delete(id: Long){
-        viewModelScope.launch (Dispatchers.IO)  {
-            dao.deleteById(id)
+    fun delete(id: Long, onUndoAvailable: (Doa) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val deletedDoa = dao.getDoaById(id)
+            if (deletedDoa != null) {
+                dao.softDeleteById(id)
+                onUndoAvailable(deletedDoa)
+            }
+        }
+    }
+    fun restore(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.restoreById(id)
         }
     }
 

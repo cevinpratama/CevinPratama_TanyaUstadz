@@ -16,16 +16,21 @@ interface DoaDao {
     @Update
     suspend fun update(doa: Doa)
 
-    @Query("SELECT * FROM doa ORDER BY tanggal DESC")
-    fun getDoa(): Flow<List<Doa>>
+    @Query("SELECT * FROM doa WHERE isDeleted = 0 ORDER BY tanggal DESC")
+    fun getDoa(): Flow<List<Doa>> // Menampilkan doa yang tidak dihapus
+
+    @Query("SELECT * FROM doa WHERE isDeleted = 1 ORDER BY tanggal DESC")
+    fun getDeletedDoa(): Flow<List<Doa>> // Menampilkan doa yang sudah dihapus (Recycle Bin)
 
     @Query("SELECT * FROM doa WHERE id = :id")
-    suspend fun getDoaById(id : Long):Doa?
+    suspend fun getDoaById(id: Long): Doa?
 
     @Query("UPDATE doa SET isFavorite = :favorite WHERE id = :id")
     suspend fun updateFavorite(id: Long, favorite: Boolean)
 
+    @Query("UPDATE doa SET isDeleted = 1 WHERE id = :id")
+    suspend fun softDeleteById(id: Long) // Soft delete
 
-    @Query("DELETE FROM doa WHERE id = :id")
-    suspend fun deleteById(id : Long)
+    @Query("UPDATE doa SET isDeleted = 0 WHERE id = :id")
+    suspend fun restoreById(id: Long) // Restore (Undo)
 }
