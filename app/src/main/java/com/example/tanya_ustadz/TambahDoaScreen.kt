@@ -1,6 +1,7 @@
 package com.example.tanya_ustadz
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -15,11 +16,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +37,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -53,6 +65,8 @@ fun TambahDoaScreen(navController: NavHostController) {
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
+    val plusColor = if (isDark) Color.White else Color(0xFF1E1E1E)
+    var showList by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -81,7 +95,23 @@ fun TambahDoaScreen(navController: NavHostController) {
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = cardColor
-                    )
+                    ),
+                    actions ={
+                        IconButton(onClick = { showList = !showList }) {
+                            Icon(
+                                painter = painterResource(
+                                    if (showList) R.drawable.baseline_grid_view_24
+                                    else R.drawable.baseline_list_24
+                                ),
+                                contentDescription = stringResource(
+                                    if (showList) R.string.grid
+                                    else R.string.list
+                                ),
+                                tint = plusColor
+                            )
+
+                        }
+                    }
                 )
             }
         },
@@ -90,10 +120,10 @@ fun TambahDoaScreen(navController: NavHostController) {
                 onClick = {
                     navController.navigate(Screen.FormBaru.route)                }
             ){
-                androidx.compose.material3.Icon(
+                Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = stringResource(R.string.tambah_doa),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = plusColor
 
                 )
             }
@@ -101,6 +131,7 @@ fun TambahDoaScreen(navController: NavHostController) {
     )
     { innerPadding ->
         ScreenContent(
+            showList,
             modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundColor)
@@ -111,11 +142,46 @@ fun TambahDoaScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostController){
+fun GridItem(doa: Doa, onClick: () -> Unit) {
+    val isDark = isSystemInDarkTheme()
+    val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .border(1.dp, MaterialTheme.colorScheme.outline),
+        colors = CardDefaults.cardColors(
+            containerColor = cardColor
+        )
+    ) {
+       Column (
+           modifier = Modifier.padding(8.dp),
+           verticalArrangement = Arrangement.spacedBy(8.dp),
+       ){
+          Text(
+              text = doa.nama_doa,
+              maxLines = 2,
+              overflow = TextOverflow.Ellipsis,
+              fontWeight = FontWeight.Bold
+          )
+           Text(
+               text = doa.isi,
+               maxLines = 4,
+               overflow = TextOverflow.Ellipsis
+           )
+           Text(text = doa.tanggal)
+       }
+    }
+}
+
+@Composable
+fun ScreenContent(showList:Boolean, modifier: Modifier = Modifier, navController: NavHostController){
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel : MainViewModel = viewModel(factory = factory)
     val data by viewModel.data.collectAsState()
+    val isDark = isSystemInDarkTheme()
+    val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
 
     if (data.isEmpty()){
         Column (
@@ -126,15 +192,32 @@ fun ScreenContent(modifier: Modifier = Modifier, navController: NavHostControlle
             Text(text = stringResource(R.string.list_kosong))
         }
     }else{
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 84.dp)
-        ){
-            itemsIndexed(data) { _, doa ->
-                ListItem(doa = doa) {
-                    navController.navigate(Screen.FormUbah.withId(doa.id))
+        if(showList) {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 84.dp)
+            ) {
+                itemsIndexed(data) { _, doa ->
+                    ListItem(doa = doa) {
+                        navController.navigate(Screen.FormUbah.withId(doa.id))
+                    }
+                    HorizontalDivider()
                 }
-                HorizontalDivider()
+            }
+        }else {
+            LazyVerticalStaggeredGrid(
+                modifier = modifier
+                    .background(backgroundColor),
+                columns = StaggeredGridCells.Fixed(2),
+                verticalItemSpacing = 8.dp,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp,84.dp)
+            ) {
+                items(data){
+                    GridItem(doa = it) {
+                        navController.navigate(Screen.FormUbah.withId(it.id))
+                    }
+                }
             }
         }
     }
