@@ -33,7 +33,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.tanya_ustadz.model.Doa
 import com.example.tanya_ustadz.navigation.Screen
+import com.example.tanya_ustadz.util.SettingsDataStore
 import com.example.tanya_ustadz.util.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,12 +46,14 @@ fun TambahDoaScreen(navController: NavHostController) {
     val backgroundColor = if (isDark) Color(0xFF121212) else Color.White
     val cardColor = if (isDark) Color(0xFF1E1E1E) else Color.White
     val plusColor = if (isDark) Color.White else Color(0xFF1E1E1E)
-    var showList by remember { mutableStateOf(true) }
 
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: MainViewModel = viewModel(factory = factory)
     val showFavoritesOnly by viewModel.showFavoritesOnly
+
+    val dataStore = SettingsDataStore(LocalContext.current)
+    val showList by dataStore.layoutFlow.collectAsState(true)
 
     Scaffold(
         topBar = {
@@ -73,7 +79,11 @@ fun TambahDoaScreen(navController: NavHostController) {
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = cardColor),
                     actions = {
-                        IconButton(onClick = { showList = !showList }) {
+                        IconButton(onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                dataStore.saveLayout(!showList)
+                            }
+                        }) {
                             Icon(
                                 painter = painterResource(
                                     if (showList) R.drawable.baseline_grid_view_24
@@ -249,3 +259,5 @@ fun GridItem(doa: Doa, onClick: () -> Unit, onFavoriteClick: (Boolean) -> Unit) 
         }
     }
 }
+
+
